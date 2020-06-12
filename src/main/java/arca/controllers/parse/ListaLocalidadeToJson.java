@@ -15,7 +15,11 @@ public class ListaLocalidadeToJson implements ParseJson<ListaLocalidade>{
     }
 
     @Override
-    public String transform(ListaLocalidade listaLocalidade) {
-        return null;
+    public String transform(final ListaLocalidade listaLocalidade) {
+        if(null == listaLocalidade){
+            return EMPTY;
+        }else{
+            return GsonUtil.GSON.toJson(listaLocalidade);
+        }
     }
 }
