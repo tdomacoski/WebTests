@@ -17,7 +17,7 @@ public class LocalidadeToJson implements ParseJson<Localidade> {
     @Override
     public String transform(final Localidade localidade) {
         if (null == localidade) {
-            return "";
+            return EMPTY;
         } else {
             return GsonUtil.GSON.toJson(localidade);
         }

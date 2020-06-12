@@ -17,7 +17,7 @@ public class ResultListaLocalidadeToJson implements ParseJson<ResultListaLocalid
     @Override
     public String transform(ResultListaLocalidade resultListaLocalidade) {
         if(null == resultListaLocalidade){
-            return "";
+            return EMPTY;
         }else{
            return GsonUtil.GSON.toJson(resultListaLocalidade);
         }
