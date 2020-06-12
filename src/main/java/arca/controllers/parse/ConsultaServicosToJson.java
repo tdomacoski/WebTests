@@ -17,7 +17,7 @@ public class ConsultaServicosToJson implements ParseJson<ConsultaServicos> {
     @Override
     public String transform(final ConsultaServicos consultaServicos) {
         if(null == consultaServicos){
-            return "";
+            return EMPTY;
         }
         return GsonUtil.GSON.toJson(consultaServicos);
     }
