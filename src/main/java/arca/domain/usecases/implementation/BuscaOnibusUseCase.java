@@ -2,11 +2,12 @@ package arca.domain.usecases.implementation;
 
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
-import arca.domain.entities.Conexao;
+import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.ConsultaOnibus;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
+import arca.exceptions.ParseException;
 
 public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusResult, BuscaOnibusUseCase.BuscaOnibusParams> {
 
@@ -15,33 +16,31 @@ public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusRe
 
     private final RequestModel requestModel;
     private final ParseJson<ConsultaOnibus> parseJson;
-    private final Conexao conexao;
+    private final ConexaoOperadora conexaoOperadora;
 
-    public BuscaOnibusUseCase(final RequestModel requestModel, final ParseJson<ConsultaOnibus> parseJson, final Conexao conexao){
+    public BuscaOnibusUseCase(final RequestModel requestModel, final ParseJson<ConsultaOnibus> parseJson, final ConexaoOperadora conexaoOperadora){
         this.requestModel = requestModel;
         this.parseJson = parseJson;
-        this.conexao = conexao;
+        this.conexaoOperadora = conexaoOperadora;
     }
 
     @Override
     public BuscaOnibusResult execute(final BuscaOnibusParams params) {
         try{
             final String url = String.format(path, params.origem.toString(), params.destino.toString(), params.data, params.servico, params.grupo);
-            return validate(requestModel.execute(conexao, url, type));
+            return validate(requestModel.execute(conexaoOperadora, url, type));
         }catch (final Exception e){
             return new BuscaOnibusResult(e);
         }
     }
 
     private BuscaOnibusResult validate(final String json){
-        final ConsultaOnibus onibus = parseJson.parse(json);
-        if(null == onibus){
-            return new BuscaOnibusResult(new Exception(String.format("no parse json: %s", json)));
-        }else{
-            return new BuscaOnibusResult(onibus);
+        try {
+            return new BuscaOnibusResult(parseJson.parse(json));
+        } catch (final ParseException pe) {
+            return new BuscaOnibusResult(pe);
         }
     }
-
 
     public static class BuscaOnibusParams extends Params {
         public final Long origem;

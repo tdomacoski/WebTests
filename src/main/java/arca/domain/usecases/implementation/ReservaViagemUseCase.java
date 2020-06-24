@@ -3,11 +3,12 @@ package arca.domain.usecases.implementation;
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.BloquearPoltrona;
-import arca.domain.entities.Conexao;
+import arca.domain.entities.ConexaoOperadora;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
+import arca.exceptions.ParseException;
 
 public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaViagemResult, ReservaViagemUseCase.ReservaViagemParams> {
 
@@ -16,12 +17,12 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
 
     private final RequestModel requestModel;
     private final ParseJson<BloquearPoltrona> parseJson;
-    private final Conexao conexao;
+    private final ConexaoOperadora conexaoOperadora;
 
-    public ReservaViagemUseCase(final RequestModel requestModel, ParseJson<BloquearPoltrona> parseJson, final Conexao conexao) {
+    public ReservaViagemUseCase(final RequestModel requestModel, ParseJson<BloquearPoltrona> parseJson, final ConexaoOperadora conexaoOperadora) {
         this.requestModel = requestModel;
         this.parseJson = parseJson;
-        this.conexao = conexao;
+        this.conexaoOperadora = conexaoOperadora;
     }
 
 
@@ -29,7 +30,7 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
     public ReservaViagemResult execute(final ReservaViagemParams params) {
         try {
             return validate(
-                    requestModel.execute(conexao, generateUrl(params), type)
+                    requestModel.execute(conexaoOperadora, generateUrl(params), type)
             );
         } catch (final NetworkException ne) {
             return new ReservaViagemResult(ne);
@@ -43,13 +44,10 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
     }
 
     private ReservaViagemResult validate(final String json) {
-        final BloquearPoltrona bp = parseJson.parse(json);
-        if (null == bp) {
-            return new ReservaViagemResult(
-                    new Exception(String.format("no parse json: %s", json))
-            );
-        } else {
-            return new ReservaViagemResult(bp);
+        try{
+            return new ReservaViagemResult(parseJson.parse(json));
+        }catch (final ParseException pe){
+            return new ReservaViagemResult(pe);
         }
     }
 

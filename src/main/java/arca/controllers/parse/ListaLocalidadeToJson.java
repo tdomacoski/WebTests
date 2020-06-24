@@ -1,13 +1,16 @@
 package arca.controllers.parse;
 
 import arca.domain.entities.ListaLocalidade;
+import arca.exceptions.ParseException;
 import arca.util.GsonUtil;
+import arca.util.Logger;
 
 public class ListaLocalidadeToJson implements ParseJson<ListaLocalidade>{
     @Override
-    public ListaLocalidade parse(String json) {
+    public ListaLocalidade parse(String json) throws ParseException {
+        Logger.debug(json);
         if(null == json || "".equals(json.trim())){
-            return null;
+            throw  new ParseException(json);
         }else{
             final ListaLocalidade l = GsonUtil.GSON.fromJson(json, ListaLocalidade.class);
             return l;
@@ -15,9 +18,9 @@ public class ListaLocalidadeToJson implements ParseJson<ListaLocalidade>{
     }
 
     @Override
-    public String transform(final ListaLocalidade listaLocalidade) {
+    public String transform(final ListaLocalidade listaLocalidade) throws ParseException {
         if(null == listaLocalidade){
-            return EMPTY;
+            throw new ParseException("null");
         }else{
             return GsonUtil.GSON.toJson(listaLocalidade);
         }

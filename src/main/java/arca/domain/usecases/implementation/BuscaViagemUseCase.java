@@ -2,14 +2,17 @@ package arca.domain.usecases.implementation;
 
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
-import arca.domain.entities.Conexao;
+import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.ConsultaServicos;
 import arca.domain.entities.Localidade;
+import arca.domain.entities.ResultadoViagem;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
+import arca.exceptions.ParseException;
 import arca.util.DateUtils;
+import arca.util.Logger;
 
 import java.util.Calendar;
 
@@ -19,32 +22,36 @@ public class BuscaViagemUseCase extends UseCase<BuscaViagemUseCase.BuscaViagemRe
     private final String type = "GET";
 
     private final RequestModel requestModel;
-    private final ParseJson<ConsultaServicos> parseJson;
-    private final Conexao conexao;
+    private final ParseJson<ResultadoViagem> parseJson;
+    private final ConexaoOperadora conexaoOperadora;
 
-    public BuscaViagemUseCase(final RequestModel requestModel, final ParseJson<ConsultaServicos> parseJson, final Conexao conexao){
+    public BuscaViagemUseCase(final RequestModel requestModel, final ParseJson<ResultadoViagem> parseJson, final ConexaoOperadora conexaoOperadora){
         this.requestModel = requestModel;
         this.parseJson = parseJson;
-        this.conexao = conexao;
+        this.conexaoOperadora = conexaoOperadora;
     }
 
     @Override
     public BuscaViagemResult execute(final BuscaViagemParams params) {
-        final String urlMethod =
-                String.format(method, params.origem.id, params.destino.id, DateUtils.formatFromAPI(params.date.getTimeInMillis()));
+
         try{
-            return validate( requestModel.execute(conexao, urlMethod, type) );
+            return validate( requestModel.execute(conexaoOperadora, generateUrl(params), type) );
         }catch (final NetworkException ne){
             return new BuscaViagemResult(ne);
         }
     }
+    private String generateUrl(final BuscaViagemParams params){
+        final String urlMethod =
+                String.format(method, params.origem.id, params.destino.id,
+                        DateUtils.formatFromAPI(params.date.getTimeInMillis()));
+        return urlMethod;
+    }
 
     private BuscaViagemResult validate(final String json){
-        final ConsultaServicos consultaServicos = parseJson.parse(json);
-        if(null == consultaServicos){
-            return new BuscaViagemResult(new Exception(String.format("no parse json: %s", json)));
-        }else{
-            return new BuscaViagemResult(consultaServicos);
+        try{
+            return new BuscaViagemResult(parseJson.parse(json).consultaServicos);
+        }catch (final ParseException pe){
+            return new BuscaViagemResult(pe);
         }
     }
 

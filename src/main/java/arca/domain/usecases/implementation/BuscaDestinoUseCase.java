@@ -2,13 +2,14 @@ package arca.domain.usecases.implementation;
 
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
-import arca.domain.entities.Conexao;
+import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.Localidade;
 import arca.domain.entities.ResultListaLocalidade;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
+import arca.exceptions.ParseException;
 
 public class BuscaDestinoUseCase extends UseCase<BuscaDestinoUseCase.BuscaDestinoResult, BuscaDestinoUseCase.BuscaDestinoParams> {
 
@@ -17,28 +18,27 @@ public class BuscaDestinoUseCase extends UseCase<BuscaDestinoUseCase.BuscaDestin
 
     private final RequestModel requestModel;
     private final ParseJson<ResultListaLocalidade> parseJson;
-    private final Conexao conexao;
+    private final ConexaoOperadora conexaoOperadora;
 
-    public BuscaDestinoUseCase(final RequestModel requestModel, final ParseJson<ResultListaLocalidade> parseJson, final Conexao conexao) {
+    public BuscaDestinoUseCase(final RequestModel requestModel, final ParseJson<ResultListaLocalidade> parseJson, final ConexaoOperadora conexaoOperadora) {
         this.requestModel = requestModel;
         this.parseJson = parseJson;
-        this.conexao = conexao;
+        this.conexaoOperadora = conexaoOperadora;
     }
 
     @Override
     public BuscaDestinoResult execute(final BuscaDestinoParams params) {
         try{
-            return validate(requestModel.execute(conexao, String.format(method,params.origem.id.toString() ), type));
+            return validate(requestModel.execute(conexaoOperadora, String.format(method,params.origem.id.toString() ), type));
         }catch (final NetworkException e){
             return new BuscaDestinoResult(e);
         }
     }
     private BuscaDestinoResult validate(final String json){
-        final ResultListaLocalidade result = parseJson.parse(json);
-        if(null == result){
-            return new BuscaDestinoResult(new Exception(String.format("no parse to json: %s", json)));
-        }else{
-            return new BuscaDestinoResult(result);
+        try{
+            return new BuscaDestinoResult(parseJson.parse(json));
+        }catch (final ParseException pe){
+            return new BuscaDestinoResult(pe);
         }
     }
 
