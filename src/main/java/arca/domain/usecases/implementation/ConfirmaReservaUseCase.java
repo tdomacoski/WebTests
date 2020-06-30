@@ -2,54 +2,60 @@ package arca.domain.usecases.implementation;
 
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
-import arca.domain.entities.Conexao;
+import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.ConfirmacaoVendaResult;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
+import arca.exceptions.ParseException;
 
 public class ConfirmaReservaUseCase extends UseCase<ConfirmaReservaUseCase.ReservaResult, ConfirmaReservaUseCase.ReservaParams> {
-
-    private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&idtransacao=%s&documentoPassageiro=%s&seguro=%s&numAutorizacao=%s&numParcelas=%s&localizador=%s&nomePassageiro=%s&descontoPercentual=%s&numFidelidade=%s&embarqueId=%s&desembarquei=%s";
+//    private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&idtransacao=%s&documentoPassageiro=%s&nomePassageiro=%s&numAutorizacao=%s&numParcelas=%s";
+//    private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&idtransacao=%s&documentoPassageiro=%s&seguro=%s&numAutorizacao=%s&numParcelas=%s&localizador=%s&nomePassageiro=%s&descontoPercentual=%s&numFidelidade=%s&embarqueId=%s&desembarquei=%s";
+    private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&idtransacao=%s&documentoPassageiro=%s&seguro=%s&numAutorizacao=%s&numParcelas=%s&nomePassageiro=%s&descontoPercentual=%s&numFidelidade=%s&embarqueId=%s&desembarquei=%s";
     private final String type = "POST";
 
     private final RequestModel requestModel;
     private final ParseJson<ConfirmacaoVendaResult> parseJson;
-    private final Conexao conexao;
+    private final ConexaoOperadora conexaoOperadora;
 
     public ConfirmaReservaUseCase(final RequestModel requestModel,
                                   final ParseJson<ConfirmacaoVendaResult> parseJson,
-                                  final Conexao conexao){
+                                  final ConexaoOperadora conexaoOperadora){
         this.requestModel = requestModel;
         this.parseJson  = parseJson;
-        this.conexao = conexao;
+        this.conexaoOperadora = conexaoOperadora;
     }
 
     @Override
     public ReservaResult execute(ReservaParams params) {
         try {
             return validate(
-              requestModel.execute(conexao, generateUrl(params), type)
+              requestModel.execute(conexaoOperadora, generateUrl(params), type)
             );
         } catch (final NetworkException ne) {
             return new ReservaResult(ne);
         }
     }
 
-    private ReservaResult validate(final String json){
-        final ConfirmacaoVendaResult result = parseJson.parse(json);
-        if(null == result){
-            return new ReservaResult(new Exception(String.format("no parse json: %s", json)));
-        }else{
-            return new ReservaResult(result);
+    private ReservaResult validate(final String json) {
+        try {
+            return new ReservaResult(parseJson.parse(json));
+        } catch (final ParseException pe) {
+            return new ReservaResult(pe);
         }
     }
 
     private String generateUrl(final ReservaParams params){
+//        return String.format(path, params.origem, params.destino, params.data,
+//                params.servico, params.idtransacao, params.documentoPassageiro,
+//                params.nomePassageiro, params.numAutorizacao, params.numParcelas);
         return String.format(path, params.origem, params.destino, params.data, params.servico,
                 params.grupo, params.idtransacao, params.documentoPassageiro, params.seguro,
-                params.numAutorizacao, params.numParcelas, params.localizador, params.nomePassageiro,
+                params.numAutorizacao, params.numParcelas,
+//                params.localizador,
+                params.nomePassageiro,
                 params.descontoPercentual, params.numFidelidade, params.embarqueId, params.desembarquei);
     }
 

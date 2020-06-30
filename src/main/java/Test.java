@@ -9,6 +9,7 @@ import arca.util.GsonUtil;
 
 public class Test {
 
+
     public static void main(String[] args) {
 
         final BuscaOrigemUseCase buscaOrigemUseCase = new BuscaOrigemUseCase(
