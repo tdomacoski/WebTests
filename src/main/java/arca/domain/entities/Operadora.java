@@ -3,8 +3,8 @@ package arca.domain.entities;
 public class Operadora {
 
     public final String nome;
-    public final Conexao vendas;
-    public final Conexao integra;
+    public final ConexaoOperadora vendas;
+    public final ConexaoOperadora integra;
 
 
     public Operadora(final String nome,
@@ -13,7 +13,7 @@ public class Operadora {
                      final String urlVendas,
                      final String urlIintegra) {
         this.nome = nome;
-        this.vendas = new Conexao(urlVendas, authVendas);
-        this.integra = new Conexao(urlIintegra, authIntegra);
+        this.vendas = new ConexaoOperadora(urlVendas, authVendas);
+        this.integra = new ConexaoOperadora(urlIintegra, authIntegra);
     }
 }

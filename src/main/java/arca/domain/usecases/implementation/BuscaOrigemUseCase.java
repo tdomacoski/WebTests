@@ -2,12 +2,13 @@ package arca.domain.usecases.implementation;
 
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
-import arca.domain.entities.Conexao;
+import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.ResultListaLocalidade;
 import arca.domain.usecases.None;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
+import arca.exceptions.ParseException;
 
 public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemResult, None> {
 
@@ -16,10 +17,10 @@ public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemRe
 
     private final RequestModel requestModel;
     private final ParseJson<ResultListaLocalidade> parseJson;
-    private final Conexao conexao;
+    private final ConexaoOperadora conexaoOperadora;
 
-    public BuscaOrigemUseCase(final Conexao conexao, final RequestModel requestModel, ParseJson<ResultListaLocalidade> parseJson){
-        this.conexao = conexao;
+    public BuscaOrigemUseCase(final ConexaoOperadora conexaoOperadora, final RequestModel requestModel, ParseJson<ResultListaLocalidade> parseJson){
+        this.conexaoOperadora = conexaoOperadora;
         this.requestModel = requestModel;
         this.parseJson = parseJson;
     }
@@ -28,7 +29,7 @@ public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemRe
     public BuscaOrigemResult execute(None params) {
         try {
             return validateAndTransform(
-                    requestModel.execute(conexao, method, type)
+                    requestModel.execute(conexaoOperadora, method, type)
             );
         }catch (final NetworkException e){
           return new BuscaOrigemResult(e);
@@ -36,14 +37,12 @@ public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemRe
     }
 
     private BuscaOrigemResult validateAndTransform(final String json){
-        final ResultListaLocalidade localidades = parseJson.parse(json);
-        if(null == localidades){
-            return new BuscaOrigemResult(new Exception(String.format("no parse json to object : %s", json)));
-        }else{
-            return new BuscaOrigemResult(localidades);
+        try{
+            return new BuscaOrigemResult(parseJson.parse(json));
+        }catch (final ParseException pe){
+            return new BuscaOrigemResult(pe);
         }
     }
-
 
     public static class BuscaOrigemResult extends Result<ResultListaLocalidade>{
         public BuscaOrigemResult(ResultListaLocalidade result) {

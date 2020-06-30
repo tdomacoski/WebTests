@@ -1,7 +1,8 @@
 package arca.controllers.network;
 
-import arca.domain.entities.Conexao;
+import arca.domain.entities.ConexaoOperadora;
 import arca.exceptions.NetworkException;
+import arca.util.Logger;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,13 +12,15 @@ import java.net.URL;
 public class RequestModelImpl implements RequestModel {
 
     @Override
-    public String execute(Conexao conexao, String metodo, String tipo) throws NetworkException {
+    public String execute(ConexaoOperadora conexaoOperadora, String metodo, String tipo) throws NetworkException {
         try {
-            final URL url = new URL(String.format("%s%s", conexao.url, metodo));
+            final String ulrString = String.format("%s%s", conexaoOperadora.url, metodo);
+            Logger.debug(ulrString);
+            final URL url = new URL(ulrString);
             final HttpURLConnection connection = HttpURLConnection.class.cast(url.openConnection());
             connection.setRequestMethod(tipo);
-            if (null != conexao.auth) {
-                connection.setRequestProperty("Authorization", conexao.auth);
+            if (null != conexaoOperadora.auth) {
+                connection.setRequestProperty("Authorization", conexaoOperadora.auth);
             }
             int responseCode = connection.getResponseCode();
             if (HttpURLConnection.HTTP_OK == responseCode) {

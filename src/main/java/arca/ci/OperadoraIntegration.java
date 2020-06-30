@@ -2,6 +2,7 @@ package arca.ci;
 
 import arca.domain.entities.Operadora;
 
+
 public class OperadoraIntegration {
 
     public static Operadora garcia() {
@@ -9,7 +10,7 @@ public class OperadoraIntegration {
                 "Garcia",
                 "Basic cmpBdXRoV3M6MU1Zbk90Ulg0Zw==",
                 "Basic Z2FyY2lhOnZnYXJjaWE3NjU0",
-                "http://200.155.58.11:9080/VendaWebService/rj/",
+                "http://200.155.58.11:8980/VendaWebService/rj/",
                 "http://200.155.58.11:8282/RJIntegraGarcia/"
         );
     }

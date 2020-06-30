@@ -1,21 +1,24 @@
 package arca.controllers.parse;
 
 import arca.domain.entities.ConfirmacaoVendaResult;
+import arca.exceptions.ParseException;
 import arca.util.GsonUtil;
+import arca.util.Logger;
 
 public class ConfirmacaoVendaToJson implements ParseJson<ConfirmacaoVendaResult> {
     @Override
-    public ConfirmacaoVendaResult parse(final String json) {
+    public ConfirmacaoVendaResult parse(final String json) throws ParseException {
+        Logger.debug(json);
         if(null == json || "".equals(json)){
-            return null;
+            throw new ParseException(json);
         }else{
             return GsonUtil.GSON.fromJson(json, ConfirmacaoVendaResult.class);
         }
     }
     @Override
-    public String transform(final ConfirmacaoVendaResult confirmacaoVendaResult) {
+    public String transform(final ConfirmacaoVendaResult confirmacaoVendaResult)throws ParseException {
         if(confirmacaoVendaResult == null){
-            return "";
+            throw  new ParseException("null");
         }else{
             return GsonUtil.GSON.toJson(confirmacaoVendaResult);
         }
