@@ -1,16 +1,13 @@
 package arca.controllers.parse;
 
 import arca.domain.entities.ConsultaOnibus;
-import arca.domain.entities.ResultadoViagem;
 import arca.exceptions.ParseException;
 import arca.util.GsonUtil;
-import arca.util.Logger;
 
 public class ConsultaOnibusToJson implements ParseJson<ConsultaOnibus> {
 
     @Override
     public ConsultaOnibus parse(String json) throws ParseException {
-        Logger.debug(json);
         if(null == json || "".equals(json)){
             throw new ParseException(json);
         }else{

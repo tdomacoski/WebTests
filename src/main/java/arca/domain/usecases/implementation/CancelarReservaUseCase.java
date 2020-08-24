@@ -9,6 +9,7 @@ import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
 import arca.exceptions.ParseException;
+import arca.logger.Logger;
 
 public class CancelarReservaUseCase extends UseCase<CancelarReservaUseCase.CancelarReservaResult, CancelarReservaUseCase.CancelarReservaParams> {
 
@@ -17,19 +18,24 @@ public class CancelarReservaUseCase extends UseCase<CancelarReservaUseCase.Cance
     private final RequestModel requestModel;
     private final ParseJson<DevolvePoltrona> parseJson;
     private final ConexaoOperadora conexaoOperadora;
+    private final Logger logger;
 
     public CancelarReservaUseCase(final RequestModel requestModel,
                                   final ParseJson<DevolvePoltrona> parseJson,
-                                  final ConexaoOperadora conexaoOperadora) {
+                                  final ConexaoOperadora conexaoOperadora,
+                                  final Logger logger) {
         this.requestModel = requestModel;
         this.parseJson = parseJson;
         this.conexaoOperadora = conexaoOperadora;
+        this.logger = logger;
     }
 
     @Override
     public CancelarReservaResult execute(CancelarReservaParams params) {
         try {
-            return validate(requestModel.execute(conexaoOperadora, generateUrl(params), type));
+            final String url = generateUrl(params);
+            logger.add(url);
+            return validate(requestModel.execute(conexaoOperadora, url, type));
         } catch (final NetworkException ne) {
             return new CancelarReservaResult(ne);
         }
@@ -37,6 +43,7 @@ public class CancelarReservaUseCase extends UseCase<CancelarReservaUseCase.Cance
 
 
     private CancelarReservaResult validate(final String json) {
+        logger.add(json);
         try {
             return new CancelarReservaResult(parseJson.parse(json));
         } catch (final ParseException pe) {

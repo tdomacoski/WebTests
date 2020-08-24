@@ -8,6 +8,7 @@ import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.ParseException;
+import arca.logger.Logger;
 
 public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusResult, BuscaOnibusUseCase.BuscaOnibusParams> {
 
@@ -17,17 +18,23 @@ public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusRe
     private final RequestModel requestModel;
     private final ParseJson<ConsultaOnibus> parseJson;
     private final ConexaoOperadora conexaoOperadora;
+    private final Logger logger;
 
-    public BuscaOnibusUseCase(final RequestModel requestModel, final ParseJson<ConsultaOnibus> parseJson, final ConexaoOperadora conexaoOperadora){
+    public BuscaOnibusUseCase(final RequestModel requestModel,
+                              final ParseJson<ConsultaOnibus> parseJson,
+                              final ConexaoOperadora conexaoOperadora,
+                              final Logger logger){
         this.requestModel = requestModel;
         this.parseJson = parseJson;
         this.conexaoOperadora = conexaoOperadora;
+        this.logger = logger;
     }
 
     @Override
     public BuscaOnibusResult execute(final BuscaOnibusParams params) {
         try{
             final String url = String.format(path, params.origem.toString(), params.destino.toString(), params.data, params.servico, params.grupo);
+           logger.add(url);
             return validate(requestModel.execute(conexaoOperadora, url, type));
         }catch (final Exception e){
             return new BuscaOnibusResult(e);
@@ -36,6 +43,7 @@ public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusRe
 
     private BuscaOnibusResult validate(final String json){
         try {
+            logger.add(json);
             return new BuscaOnibusResult(parseJson.parse(json));
         } catch (final ParseException pe) {
             return new BuscaOnibusResult(pe);

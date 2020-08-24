@@ -3,12 +3,10 @@ package arca.controllers.parse;
 import arca.domain.entities.ListaLocalidade;
 import arca.exceptions.ParseException;
 import arca.util.GsonUtil;
-import arca.util.Logger;
 
 public class ListaLocalidadeToJson implements ParseJson<ListaLocalidade>{
     @Override
     public ListaLocalidade parse(String json) throws ParseException {
-        Logger.debug(json);
         if(null == json || "".equals(json.trim())){
             throw  new ParseException(json);
         }else{

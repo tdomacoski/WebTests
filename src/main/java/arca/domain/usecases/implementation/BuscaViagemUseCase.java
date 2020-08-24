@@ -11,8 +11,8 @@ import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
 import arca.exceptions.ParseException;
+import arca.logger.Logger;
 import arca.util.DateUtils;
-import arca.util.Logger;
 
 import java.util.Calendar;
 
@@ -24,18 +24,25 @@ public class BuscaViagemUseCase extends UseCase<BuscaViagemUseCase.BuscaViagemRe
     private final RequestModel requestModel;
     private final ParseJson<ResultadoViagem> parseJson;
     private final ConexaoOperadora conexaoOperadora;
+    private final Logger logger;
 
-    public BuscaViagemUseCase(final RequestModel requestModel, final ParseJson<ResultadoViagem> parseJson, final ConexaoOperadora conexaoOperadora){
+    public BuscaViagemUseCase(final RequestModel requestModel,
+                              final ParseJson<ResultadoViagem> parseJson,
+                              final ConexaoOperadora conexaoOperadora,
+                              final Logger logger){
         this.requestModel = requestModel;
         this.parseJson = parseJson;
         this.conexaoOperadora = conexaoOperadora;
+        this.logger = logger;
     }
 
     @Override
     public BuscaViagemResult execute(final BuscaViagemParams params) {
 
         try{
-            return validate( requestModel.execute(conexaoOperadora, generateUrl(params), type) );
+            final String url = generateUrl(params);
+            logger.add(url);
+            return validate( requestModel.execute(conexaoOperadora, url, type) );
         }catch (final NetworkException ne){
             return new BuscaViagemResult(ne);
         }
@@ -49,6 +56,7 @@ public class BuscaViagemUseCase extends UseCase<BuscaViagemUseCase.BuscaViagemRe
 
     private BuscaViagemResult validate(final String json){
         try{
+            logger.add(json);
             return new BuscaViagemResult(parseJson.parse(json).consultaServicos);
         }catch (final ParseException pe){
             return new BuscaViagemResult(pe);

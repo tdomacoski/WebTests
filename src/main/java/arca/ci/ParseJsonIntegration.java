@@ -17,6 +17,7 @@ public class ParseJsonIntegration {
     private static DevolvePoltronaToJson devolvePoltronaToJson;
     private static ResultadoViagemToJson resultadoViagemToJson;
     private static ConsultaOnibusToJson consultaOnibusToJson;
+    private static BuscaStatusBilheteToJson statusBilheteToJson;
 
     public static ParseJson<Localidade> getParseLocalidade(){
         if(null == localidadeToJson){
@@ -79,6 +80,13 @@ public class ParseJsonIntegration {
             consultaOnibusToJson = new ConsultaOnibusToJson();
         }
         return consultaOnibusToJson;
+    }
+
+    public static ParseJson<BuscaStatusBilhete> getBuscaStatusBilheteToJson(){
+       if(null == statusBilheteToJson){
+           statusBilheteToJson = new BuscaStatusBilheteToJson();
+       }
+       return statusBilheteToJson;
     }
 
 

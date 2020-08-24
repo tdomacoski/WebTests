@@ -1,6 +1,8 @@
 package arca.exceptions;
 
-public class NetworkException extends Exception {
+import java.io.IOException;
+
+public class NetworkException extends IOException {
     public final Integer statusCode;
     public final String message;
     public NetworkException(final Throwable t, int statusCode, final String message){

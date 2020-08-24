@@ -9,30 +9,34 @@ import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
 import arca.exceptions.ParseException;
+import arca.logger.Logger;
 
 public class ConfirmaReservaUseCase extends UseCase<ConfirmaReservaUseCase.ReservaResult, ConfirmaReservaUseCase.ReservaParams> {
-//    private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&idtransacao=%s&documentoPassageiro=%s&nomePassageiro=%s&numAutorizacao=%s&numParcelas=%s";
-//    private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&idtransacao=%s&documentoPassageiro=%s&seguro=%s&numAutorizacao=%s&numParcelas=%s&localizador=%s&nomePassageiro=%s&descontoPercentual=%s&numFidelidade=%s&embarqueId=%s&desembarquei=%s";
     private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&idtransacao=%s&documentoPassageiro=%s&seguro=%s&numAutorizacao=%s&numParcelas=%s&nomePassageiro=%s&descontoPercentual=%s&numFidelidade=%s&embarqueId=%s&desembarquei=%s";
     private final String type = "POST";
 
     private final RequestModel requestModel;
     private final ParseJson<ConfirmacaoVendaResult> parseJson;
     private final ConexaoOperadora conexaoOperadora;
+    private final Logger logger;
 
     public ConfirmaReservaUseCase(final RequestModel requestModel,
                                   final ParseJson<ConfirmacaoVendaResult> parseJson,
-                                  final ConexaoOperadora conexaoOperadora){
+                                  final ConexaoOperadora conexaoOperadora,
+                                  final Logger logger){
         this.requestModel = requestModel;
         this.parseJson  = parseJson;
         this.conexaoOperadora = conexaoOperadora;
+        this.logger = logger;
     }
 
     @Override
     public ReservaResult execute(ReservaParams params) {
         try {
+            final String url = generateUrl(params);
+            logger.add(url);
             return validate(
-              requestModel.execute(conexaoOperadora, generateUrl(params), type)
+              requestModel.execute(conexaoOperadora, url, type)
             );
         } catch (final NetworkException ne) {
             return new ReservaResult(ne);
@@ -40,6 +44,7 @@ public class ConfirmaReservaUseCase extends UseCase<ConfirmaReservaUseCase.Reser
     }
 
     private ReservaResult validate(final String json) {
+        logger.add(json);
         try {
             return new ReservaResult(parseJson.parse(json));
         } catch (final ParseException pe) {
@@ -48,9 +53,6 @@ public class ConfirmaReservaUseCase extends UseCase<ConfirmaReservaUseCase.Reser
     }
 
     private String generateUrl(final ReservaParams params){
-//        return String.format(path, params.origem, params.destino, params.data,
-//                params.servico, params.idtransacao, params.documentoPassageiro,
-//                params.nomePassageiro, params.numAutorizacao, params.numParcelas);
         return String.format(path, params.origem, params.destino, params.data, params.servico,
                 params.grupo, params.idtransacao, params.documentoPassageiro, params.seguro,
                 params.numAutorizacao, params.numParcelas,

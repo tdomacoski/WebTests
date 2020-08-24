@@ -3,13 +3,11 @@ package arca.controllers.parse;
 import arca.domain.entities.DevolvePoltrona;
 import arca.exceptions.ParseException;
 import arca.util.GsonUtil;
-import arca.util.Logger;
 
 public class DevolvePoltronaToJson implements ParseJson<DevolvePoltrona> {
 
     @Override
     public DevolvePoltrona parse(final String json) throws ParseException {
-        Logger.debug(json);
         if (null == json || "".equals(json)) {
             throw new ParseException(json);
         } else {

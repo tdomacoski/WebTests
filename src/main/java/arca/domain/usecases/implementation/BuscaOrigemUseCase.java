@@ -9,6 +9,7 @@ import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
 import arca.exceptions.ParseException;
+import arca.logger.Logger;
 
 public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemResult, None> {
 
@@ -18,16 +19,22 @@ public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemRe
     private final RequestModel requestModel;
     private final ParseJson<ResultListaLocalidade> parseJson;
     private final ConexaoOperadora conexaoOperadora;
+    private final Logger logger;
 
-    public BuscaOrigemUseCase(final ConexaoOperadora conexaoOperadora, final RequestModel requestModel, ParseJson<ResultListaLocalidade> parseJson){
+    public BuscaOrigemUseCase(final ConexaoOperadora conexaoOperadora,
+                              final RequestModel requestModel,
+                              ParseJson<ResultListaLocalidade> parseJson,
+                              final Logger logger){
         this.conexaoOperadora = conexaoOperadora;
         this.requestModel = requestModel;
         this.parseJson = parseJson;
+        this.logger = logger;
     }
 
     @Override
     public BuscaOrigemResult execute(None params) {
         try {
+            logger.add(method);
             return validateAndTransform(
                     requestModel.execute(conexaoOperadora, method, type)
             );
@@ -38,6 +45,7 @@ public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemRe
 
     private BuscaOrigemResult validateAndTransform(final String json){
         try{
+            logger.add(json);
             return new BuscaOrigemResult(parseJson.parse(json));
         }catch (final ParseException pe){
             return new BuscaOrigemResult(pe);

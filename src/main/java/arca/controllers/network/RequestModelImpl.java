@@ -2,9 +2,9 @@ package arca.controllers.network;
 
 import arca.domain.entities.ConexaoOperadora;
 import arca.exceptions.NetworkException;
-import arca.util.Logger;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,7 +15,6 @@ public class RequestModelImpl implements RequestModel {
     public String execute(ConexaoOperadora conexaoOperadora, String metodo, String tipo) throws NetworkException {
         try {
             final String ulrString = String.format("%s%s", conexaoOperadora.url, metodo);
-            Logger.debug(ulrString);
             final URL url = new URL(ulrString);
             final HttpURLConnection connection = HttpURLConnection.class.cast(url.openConnection());
             connection.setRequestMethod(tipo);
@@ -36,7 +35,7 @@ public class RequestModelImpl implements RequestModel {
             } else {
                 throw new NetworkException(null, responseCode, String.format("status code: %d", responseCode));
             }
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             throw new NetworkException(e, 0, e.getMessage());
         }
     }

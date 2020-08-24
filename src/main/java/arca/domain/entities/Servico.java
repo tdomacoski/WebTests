@@ -1,8 +1,6 @@
 package arca.domain.entities;
 
-import java.io.Serializable;
-
-public class Servico implements Serializable {
+public class Servico extends JsonModel {
 	private static final long serialVersionUID = 1L;
 
 	public String mensagemServico;

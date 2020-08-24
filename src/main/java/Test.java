@@ -5,17 +5,19 @@ import arca.domain.entities.Localidade;
 import arca.domain.usecases.None;
 import arca.domain.usecases.implementation.BuscaDestinoUseCase;
 import arca.domain.usecases.implementation.BuscaOrigemUseCase;
+import arca.logger.Logger;
+import arca.logger.LoggerFile;
 import arca.util.GsonUtil;
 
 public class Test {
 
-
+private static final Logger LOGGER = new LoggerFile();
     public static void main(String[] args) {
 
         final BuscaOrigemUseCase buscaOrigemUseCase = new BuscaOrigemUseCase(
                 OperadoraIntegration.garcia().vendas,
                 RequestModelIntegration.getRequestModel(),
-                ParseJsonIntegration.getResultListaLocalidade() );
+                ParseJsonIntegration.getResultListaLocalidade(), LOGGER );
 
         final BuscaOrigemUseCase.BuscaOrigemResult result =
                 buscaOrigemUseCase.execute(new None());
@@ -36,7 +38,7 @@ public class Test {
                 final BuscaDestinoUseCase buscaDestino = new BuscaDestinoUseCase(
                         RequestModelIntegration.getRequestModel(),
                         ParseJsonIntegration.getResultListaLocalidade(),
-                        OperadoraIntegration.garcia().vendas);
+                        OperadoraIntegration.garcia().vendas, LOGGER);
 
                 final BuscaDestinoUseCase.BuscaDestinoResult destinoResult =
                         buscaDestino.execute(params);

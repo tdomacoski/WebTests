@@ -9,6 +9,7 @@ import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
 import arca.exceptions.NetworkException;
 import arca.exceptions.ParseException;
+import arca.logger.Logger;
 
 public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaViagemResult, ReservaViagemUseCase.ReservaViagemParams> {
 
@@ -18,19 +19,26 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
     private final RequestModel requestModel;
     private final ParseJson<BloquearPoltrona> parseJson;
     private final ConexaoOperadora conexaoOperadora;
+    private final Logger logger;
 
-    public ReservaViagemUseCase(final RequestModel requestModel, ParseJson<BloquearPoltrona> parseJson, final ConexaoOperadora conexaoOperadora) {
+    public ReservaViagemUseCase(final RequestModel requestModel,
+                                final ParseJson<BloquearPoltrona> parseJson,
+                                final ConexaoOperadora conexaoOperadora,
+                                final Logger logger) {
         this.requestModel = requestModel;
         this.parseJson = parseJson;
         this.conexaoOperadora = conexaoOperadora;
+        this.logger = logger;
     }
 
 
     @Override
     public ReservaViagemResult execute(final ReservaViagemParams params) {
         try {
+            final String url = generateUrl(params);
+            logger.add(url);
             return validate(
-                    requestModel.execute(conexaoOperadora, generateUrl(params), type)
+                    requestModel.execute(conexaoOperadora, url, type)
             );
         } catch (final NetworkException ne) {
             return new ReservaViagemResult(ne);
@@ -44,6 +52,7 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
     }
 
     private ReservaViagemResult validate(final String json) {
+        logger.add(json);
         try{
             return new ReservaViagemResult(parseJson.parse(json));
         }catch (final ParseException pe){

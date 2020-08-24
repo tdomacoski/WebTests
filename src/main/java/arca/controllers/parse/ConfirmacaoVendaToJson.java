@@ -3,12 +3,10 @@ package arca.controllers.parse;
 import arca.domain.entities.ConfirmacaoVendaResult;
 import arca.exceptions.ParseException;
 import arca.util.GsonUtil;
-import arca.util.Logger;
 
 public class ConfirmacaoVendaToJson implements ParseJson<ConfirmacaoVendaResult> {
     @Override
     public ConfirmacaoVendaResult parse(final String json) throws ParseException {
-        Logger.debug(json);
         if(null == json || "".equals(json)){
             throw new ParseException(json);
         }else{

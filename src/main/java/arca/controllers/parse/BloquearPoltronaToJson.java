@@ -3,13 +3,11 @@ package arca.controllers.parse;
 import arca.domain.entities.BloquearPoltrona;
 import arca.exceptions.ParseException;
 import arca.util.GsonUtil;
-import arca.util.Logger;
 
 public class BloquearPoltronaToJson implements ParseJson<BloquearPoltrona> {
 
     @Override
     public BloquearPoltrona parse(final String json) throws ParseException {
-        Logger.debug(json);
         if(null == json || "".equals(json)){
             throw new ParseException(json);
         }else{
