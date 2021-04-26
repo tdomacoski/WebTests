@@ -1,0 +1,8 @@
+[
+{"grupo":"sanjo","numBilhete":"10000000787696","poltrona":"73","data":"2020-08-18","origem":200,"destino":592,"servico":"27301"},
+{"grupo":"sanjo","numBilhete":"10000000790281","poltrona":"5","data":"2020-08-22","origem":592,"destino":200,"servico":"48059"},
+{"grupo":"sanjo","numBilhete":"10000000790282","poltrona":"7","data":"2020-08-22","origem":592,"destino":200,"servico":"48059"},
+{"grupo":"sanjo","numBilhete":"10000000791981","poltrona":"3","data":"2020-09-03","origem":592,"destino":200,"servico":"48059"},
+{"grupo":"sanjo","numBilhete":"10000000791982","poltrona":"15","data":"2020-09-07","origem":200,"destino":592,"servico":"27059"},
+{"grupo":"sanjo","numBilhete":null,"poltrona":"23","data":"2020-09-03","origem":592,"destino":200,"servico":"48059"}
+]
