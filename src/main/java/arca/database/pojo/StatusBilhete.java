@@ -1,4 +1,4 @@
-package arca.database.query.status;
+package arca.database.pojo;
 
 public class StatusBilhete {
     public String grupo;
@@ -8,4 +8,7 @@ public class StatusBilhete {
     public String destino;
     public String data;
     public String poltrona;
+    public Long operadora;
+    public String nome;
+    public String rg;
 }

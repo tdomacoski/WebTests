@@ -4,6 +4,7 @@ import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.ConsultaOnibus;
+import arca.domain.entities.Error;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
@@ -13,7 +14,6 @@ import arca.logger.Logger;
 public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusResult, BuscaOnibusUseCase.BuscaOnibusParams> {
 
     private final String path = "buscaOnibus?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s";
-    private final String type = "GET";
 
     private final RequestModel requestModel;
     private final ParseJson<ConsultaOnibus> parseJson;
@@ -35,16 +35,19 @@ public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusRe
         try{
             final String url = String.format(path, params.origem.toString(), params.destino.toString(), params.data, params.servico, params.grupo);
            logger.add(url);
-            return validate(requestModel.execute(conexaoOperadora, url, type));
+            return validate(requestModel.execute(conexaoOperadora, url, RequestModel.RequestType.GET));
         }catch (final Exception e){
             return new BuscaOnibusResult(e);
         }
     }
 
-    private BuscaOnibusResult validate(final String json){
+    private BuscaOnibusResult validate(final RequestModel.ResponseModel response){
         try {
-            logger.add(json);
-            return new BuscaOnibusResult(parseJson.parse(json));
+            if(response.isSucess()){
+                return new BuscaOnibusResult(parseJson.parse(response.body));
+            }else{
+                return new BuscaOnibusResult(response.error);
+            }
         } catch (final ParseException pe) {
             return new BuscaOnibusResult(pe);
         }
@@ -72,6 +75,9 @@ public class BuscaOnibusUseCase extends UseCase<BuscaOnibusUseCase.BuscaOnibusRe
         }
         public BuscaOnibusResult(final Exception exception) {
             super(exception);
+        }
+        public BuscaOnibusResult(final Error error) {
+            super(error);
         }
     }
 

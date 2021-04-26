@@ -1,7 +1,5 @@
 package arca.domain.entities;
 
-import javax.print.DocFlavor;
-
 public class Conexao {
     public String servicoConexao;
     public String dia;

@@ -1,6 +1,11 @@
 package arca.domain.entities;
 
-public class Erro extends JsonModel {
-	public String codigo;
-	public String mensagem;
+public class Error extends JsonModel {
+
+	public  Erro erro;
+	public static class Erro{
+		public String codigo;
+		public String mensagem;
+	}
 }
+

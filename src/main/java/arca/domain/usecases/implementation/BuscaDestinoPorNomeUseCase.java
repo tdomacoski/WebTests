@@ -39,6 +39,7 @@ public class BuscaDestinoPorNomeUseCase extends UseCase<BuscaDestinoPorNomeUseCa
 
     private Localidade find(final List<Localidade> localidades, final String name){
         for(final Localidade localidade: localidades){
+            System.out.println(localidade.cidade);
             if(localidade.cidade.toLowerCase().contains(name.toLowerCase())){
                 return localidade;
             }

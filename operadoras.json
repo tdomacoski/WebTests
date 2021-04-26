@@ -1,0 +1,54 @@
+{
+  "operadoras":[
+    {
+      "nome":"Gadotti",
+      "url":"http://177.101.148.227:8280/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Garcia",
+      "url":"http://200.155.58.11:8980/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Graciosa",
+      "url":"http://177.101.148.227:8180/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Ouro e Prata",
+      "url":"http://18.235.188.113:8680/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Pluma",
+      "url":"http://201.73.145.11:8080/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Expresso Princesa dos Campos",
+      "url":"http://189.2.223.233:8282/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Santo Anjo",
+      "url":"http://177.101.148.227:8080/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Valtur",
+      "url":"http://177.101.148.227:8380/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Uniao",
+      "url":"http://177.101.148.227:8480/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    },
+    {
+      "nome":"Princesa do Ivai",
+      "url":"http://177.101.148.227:8180/VendaWebService/rj/",
+      "credencias":"rjAuthWs:1MYnOtRX4g"
+    }
+  ]
+}

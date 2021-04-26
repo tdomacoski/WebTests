@@ -12,4 +12,11 @@ public class BilheteInfo extends JsonModel {
 
     public String numBilhete;
     public String status;
+
+    public String nome;
+    public String documento;
+    public String numBilhetePreImpresso;
+    public String agencia;
+    public String bilheteiro;
+
 }

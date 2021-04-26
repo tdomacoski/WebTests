@@ -3,6 +3,7 @@ package arca.domain.usecases.implementation;
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.ConexaoOperadora;
+import arca.domain.entities.Error;
 import arca.domain.entities.ResultListaLocalidade;
 import arca.domain.usecases.None;
 import arca.domain.usecases.Result;
@@ -14,7 +15,6 @@ import arca.logger.Logger;
 public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemResult, None> {
 
     private final String method = "buscaOrigem";
-    private final String type = "GET";
 
     private final RequestModel requestModel;
     private final ParseJson<ResultListaLocalidade> parseJson;
@@ -34,19 +34,22 @@ public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemRe
     @Override
     public BuscaOrigemResult execute(None params) {
         try {
-            logger.add(method);
+            logger.add(String.format("%s%s", conexaoOperadora.url, method));
             return validateAndTransform(
-                    requestModel.execute(conexaoOperadora, method, type)
+                    requestModel.execute(conexaoOperadora, method, RequestModel.RequestType.GET)
             );
         }catch (final NetworkException e){
           return new BuscaOrigemResult(e);
         }
     }
 
-    private BuscaOrigemResult validateAndTransform(final String json){
+    private BuscaOrigemResult validateAndTransform(final RequestModel.ResponseModel response){
         try{
-            logger.add(json);
-            return new BuscaOrigemResult(parseJson.parse(json));
+            if(response.isSucess()){
+                return new BuscaOrigemResult(parseJson.parse(response.body));
+            }else{
+                return new BuscaOrigemResult(response.error);
+            }
         }catch (final ParseException pe){
             return new BuscaOrigemResult(pe);
         }
@@ -59,5 +62,6 @@ public class BuscaOrigemUseCase extends UseCase<BuscaOrigemUseCase.BuscaOrigemRe
         public BuscaOrigemResult(Exception exception) {
             super(exception);
         }
+        public BuscaOrigemResult(Error error) { super(error); }
     }
 }

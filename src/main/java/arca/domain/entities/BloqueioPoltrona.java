@@ -1,6 +1,6 @@
 package arca.domain.entities;
 
-public class BloqueioPoltrona {
+public class BloqueioPoltrona extends  JsonModel{
     public String idTransacao;
     public String servico;
     public String duracao;

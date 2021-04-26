@@ -3,7 +3,6 @@ package com.arca.login;
 import com.arca.util.StringUtils;
 import com.arca.util.ThreadUtils;
 import com.arca.util.URLS;
-import com.arca.util.WebDriverUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

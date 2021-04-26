@@ -1,7 +1,5 @@
 package com.arca;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -10,6 +8,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.Calendar;
 import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MainTest {
     public static final String CHROME_DRIVER = "C:\\chromeWebDriver\\chromedriver.exe";

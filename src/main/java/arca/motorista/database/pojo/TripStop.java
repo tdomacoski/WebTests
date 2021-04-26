@@ -1,4 +1,4 @@
-package arca.motorista.domain.entities;
+package arca.motorista.database.pojo;
 
 import javax.print.DocFlavor;
 

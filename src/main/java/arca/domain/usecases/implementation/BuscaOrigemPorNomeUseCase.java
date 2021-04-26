@@ -41,6 +41,7 @@ public class BuscaOrigemPorNomeUseCase  extends UseCase<BuscaOrigemPorNomeUseCas
 
     private Localidade find(final List<Localidade> localidades, final String name){
         for(final Localidade localidade: localidades){
+            System.out.println(localidade.cidade+" "+localidade.id);
             if(localidade.cidade.toLowerCase().contains(name.toLowerCase())){
                 return localidade;
             }

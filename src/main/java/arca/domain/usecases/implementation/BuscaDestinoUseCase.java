@@ -3,6 +3,7 @@ package arca.domain.usecases.implementation;
 import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.ConexaoOperadora;
+import arca.domain.entities.Error;
 import arca.domain.entities.Localidade;
 import arca.domain.entities.ResultListaLocalidade;
 import arca.domain.usecases.Params;
@@ -15,7 +16,6 @@ import arca.logger.Logger;
 public class BuscaDestinoUseCase extends UseCase<BuscaDestinoUseCase.BuscaDestinoResult, BuscaDestinoUseCase.BuscaDestinoParams> {
 
     private final String method = "buscaDestino?origem=%s";
-    private final String type = "GET";
 
     private final RequestModel requestModel;
     private final ParseJson<ResultListaLocalidade> parseJson;
@@ -38,17 +38,20 @@ public class BuscaDestinoUseCase extends UseCase<BuscaDestinoUseCase.BuscaDestin
     public BuscaDestinoResult execute(final BuscaDestinoParams params) {
         try {
             final String url = String.format(method, params.origem.id.toString());
-            logger.add(url);
-            return validate(requestModel.execute(conexaoOperadora, url, type));
+            logger.add(String.format("%s%s", conexaoOperadora.url, url));
+            return validate(requestModel.execute(conexaoOperadora, url, RequestModel.RequestType.GET));
         } catch (final NetworkException e) {
             return new BuscaDestinoResult(e);
         }
     }
 
-    private BuscaDestinoResult validate(final String json) {
+    private BuscaDestinoResult validate(final RequestModel.ResponseModel model) {
         try {
-            logger.add(json);
-            return new BuscaDestinoResult(parseJson.parse(json));
+            if (model.isSucess()) {
+                return new BuscaDestinoResult(parseJson.parse(model.body));
+            } else {
+                return  new BuscaDestinoResult(model.error);
+            }
         } catch (final ParseException pe) {
             return new BuscaDestinoResult(pe);
         }
@@ -69,6 +72,10 @@ public class BuscaDestinoUseCase extends UseCase<BuscaDestinoUseCase.BuscaDestin
 
         public BuscaDestinoResult(Exception exception) {
             super(exception);
+        }
+
+        public BuscaDestinoResult(Error error) {
+            super(error);
         }
     }
 }

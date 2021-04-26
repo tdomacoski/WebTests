@@ -4,6 +4,7 @@ import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.ConfirmacaoVendaResult;
+import arca.domain.entities.Error;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
@@ -13,7 +14,6 @@ import arca.logger.Logger;
 
 public class ConfirmaReservaUseCase extends UseCase<ConfirmaReservaUseCase.ReservaResult, ConfirmaReservaUseCase.ReservaParams> {
     private final String path = "confirmaVenda?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&idtransacao=%s&documentoPassageiro=%s&seguro=%s&numAutorizacao=%s&numParcelas=%s&nomePassageiro=%s&descontoPercentual=%s&numFidelidade=%s&embarqueId=%s&desembarquei=%s";
-    private final String type = "POST";
 
     private final RequestModel requestModel;
     private final ParseJson<ConfirmacaoVendaResult> parseJson;
@@ -36,29 +36,44 @@ public class ConfirmaReservaUseCase extends UseCase<ConfirmaReservaUseCase.Reser
             final String url = generateUrl(params);
             logger.add(url);
             return validate(
-              requestModel.execute(conexaoOperadora, url, type)
+              requestModel.execute(conexaoOperadora, url, RequestModel.RequestType.POST)
             );
         } catch (final NetworkException ne) {
             return new ReservaResult(ne);
         }
     }
 
-    private ReservaResult validate(final String json) {
-        logger.add(json);
+    private ReservaResult validate(final RequestModel.ResponseModel response) {
         try {
-            return new ReservaResult(parseJson.parse(json));
+            if(response.isSucess()){
+                logger.add(response.body);
+                return new ReservaResult(parseJson.parse(response.body));
+            }else{
+                return  new ReservaResult(response.error);
+            }
         } catch (final ParseException pe) {
             return new ReservaResult(pe);
         }
     }
 
     private String generateUrl(final ReservaParams params){
-        return String.format(path, params.origem, params.destino, params.data, params.servico,
-                params.grupo, params.idtransacao, params.documentoPassageiro, params.seguro,
-                params.numAutorizacao, params.numParcelas,
+        return String.format(path,
+                params.origem,
+                params.destino,
+                params.data,
+                params.servico,
+                params.grupo,
+                params.idtransacao,
+                params.documentoPassageiro,
+                params.seguro,
+                params.numAutorizacao,
+                params.numParcelas,
 //                params.localizador,
                 params.nomePassageiro,
-                params.descontoPercentual, params.numFidelidade, params.embarqueId, params.desembarquei);
+                params.descontoPercentual,
+                params.numFidelidade,
+                params.embarqueId,
+                 params.desembarquei);
     }
 
 
@@ -111,6 +126,9 @@ public class ConfirmaReservaUseCase extends UseCase<ConfirmaReservaUseCase.Reser
         }
         public ReservaResult(final Exception exception) {
             super(exception);
+        }
+        public ReservaResult(final Error error) {
+            super(error);
         }
     }
 }

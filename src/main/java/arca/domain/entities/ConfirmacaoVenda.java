@@ -1,6 +1,6 @@
 package arca.domain.entities;
 
-public class ConfirmacaoVenda {
+public class ConfirmacaoVenda extends  JsonModel{
     public String idtransacao;
     public String localizador;
     public String nome;

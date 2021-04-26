@@ -4,6 +4,7 @@ import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.BloquearPoltrona;
 import arca.domain.entities.ConexaoOperadora;
+import arca.domain.entities.Error;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
@@ -14,7 +15,6 @@ import arca.logger.Logger;
 public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaViagemResult, ReservaViagemUseCase.ReservaViagemParams> {
 
     private final String path = "bloquearPoltrona?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&poltrona=%s&nomePassageiro=%s&documentoPassageiro=%s";
-    private final String type = "POST";
 
     private final RequestModel requestModel;
     private final ParseJson<BloquearPoltrona> parseJson;
@@ -38,7 +38,7 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
             final String url = generateUrl(params);
             logger.add(url);
             return validate(
-                    requestModel.execute(conexaoOperadora, url, type)
+                    requestModel.execute(conexaoOperadora, url, RequestModel.RequestType.POST)
             );
         } catch (final NetworkException ne) {
             return new ReservaViagemResult(ne);
@@ -51,10 +51,14 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
                 params.nomePassageiro, params.documentoPassageiro);
     }
 
-    private ReservaViagemResult validate(final String json) {
-        logger.add(json);
+    private ReservaViagemResult validate(final RequestModel.ResponseModel response) {
         try{
-            return new ReservaViagemResult(parseJson.parse(json));
+            if(response.isSucess()) {
+                logger.add(response.body);
+                return new ReservaViagemResult(parseJson.parse(response.body));
+            }else{
+                return new ReservaViagemResult(response.error);
+            }
         }catch (final ParseException pe){
             return new ReservaViagemResult(pe);
         }
@@ -86,12 +90,9 @@ public class ReservaViagemUseCase extends UseCase<ReservaViagemUseCase.ReservaVi
 
 
     public static class ReservaViagemResult extends Result<BloquearPoltrona> {
-        public ReservaViagemResult(BloquearPoltrona result) {
-            super(result);
-        }
-        public ReservaViagemResult(Exception exception) {
-            super(exception);
-        }
+        public ReservaViagemResult(BloquearPoltrona result) { super(result); }
+        public ReservaViagemResult(Exception exception) { super(exception); }
+        public ReservaViagemResult(Error error) { super(error); }
     }
 
 

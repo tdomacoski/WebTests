@@ -7,9 +7,19 @@ import java.io.File;
 import java.io.FileWriter;
 
 public class LoggerFile  implements Logger {
-    private static String path;
+    private String path;
+    private final String name;
 
-    static {
+    public LoggerFile(){
+        this.name = "";
+        checkFolder();
+    }
+
+    public LoggerFile(final String name){
+        this.name = name.toLowerCase().trim().replaceAll(" ", "_");
+        checkFolder();
+    }
+    private final void checkFolder(){
         path = LoadProperties.get(LoadProperties.loggerPath);
         final File pathFile = new File(path);
         if(!pathFile.exists()){
@@ -21,7 +31,6 @@ public class LoggerFile  implements Logger {
     public void add(String log) {
         System.out.println(log);
         write(log);
-
     }
 
     @Override
@@ -34,7 +43,8 @@ public class LoggerFile  implements Logger {
     private  final void write(final String log){
         try {
             final FileWriter writer = new FileWriter(getFile(), true);
-            writer.write(log);
+//            writer.write(String.format("%s\n", log));
+            writer.write(String.format("[%s]: %s\n", DateUtils.currentHours(), log));
             writer.close();
         }catch (final Exception e){
             e.printStackTrace();
@@ -42,7 +52,7 @@ public class LoggerFile  implements Logger {
     }
 
     private final File getFile(){
-        return new File(String.format("%s%s.txt", path, DateUtils.ddMMyy.format(System.currentTimeMillis())));
+        return new File(String.format("%s%s_%s.txt", path, name,DateUtils.ddMMyy.format(System.currentTimeMillis())));
     }
 
     public static final void debug(final String s){
@@ -50,4 +60,7 @@ public class LoggerFile  implements Logger {
     }
 
 
+    public String getName() {
+        return name;
+    }
 }

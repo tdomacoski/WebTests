@@ -9,55 +9,59 @@ import arca.exceptions.NoSearchResultException;
 
 import java.util.List;
 
-public class BuscaOrigemPorNomeUseCase  extends UseCase<BuscaOrigemPorNomeUseCase.BuscaOrigemPorNomeResult, BuscaOrigemPorNomeUseCase.BuscaOrigemPorNomeParams> {
+public class BuscaOrigemByIdUseCase extends UseCase<BuscaOrigemByIdUseCase.BuscaOrigemByIdResult, BuscaOrigemByIdUseCase.BuscaOrigemByIdParams> {
 
 
     private final BuscaOrigemUseCase buscaOrigemUseCase;
 
-    public BuscaOrigemPorNomeUseCase(final BuscaOrigemUseCase buscaOrigemUseCase){
+    public BuscaOrigemByIdUseCase(final BuscaOrigemUseCase buscaOrigemUseCase) {
         this.buscaOrigemUseCase = buscaOrigemUseCase;
     }
 
 
     @Override
-    public BuscaOrigemPorNomeResult execute(BuscaOrigemPorNomeParams params) {
+    public BuscaOrigemByIdResult execute(BuscaOrigemByIdParams params) {
 
-           final BuscaOrigemUseCase.BuscaOrigemResult result  =
-                   buscaOrigemUseCase.execute(new None());
-           if(result.isSuccess()){
-               final Localidade localidade = find(
-                       result.result.listaLocalidade.lsLocalidade,
-                       params.nome
-               );
-               if(null != localidade){
-                   return new BuscaOrigemPorNomeResult(localidade);
-               }else{
-                   return new BuscaOrigemPorNomeResult(new NoSearchResultException());
-               }
-           }else{
-               return new BuscaOrigemPorNomeResult(result.exception);
-           }
+        final BuscaOrigemUseCase.BuscaOrigemResult result =
+                buscaOrigemUseCase.execute(new None());
+        if (result.isSuccess()) {
+            final Localidade localidade = find(
+                    result.result.listaLocalidade.lsLocalidade,
+                    params.id);
+            if (null != localidade) {
+                return new BuscaOrigemByIdResult(localidade);
+            } else {
+                return new BuscaOrigemByIdResult(new NoSearchResultException());
+            }
+        } else {
+            return new BuscaOrigemByIdResult(result.exception);
+        }
     }
 
-    private Localidade find(final List<Localidade> localidades, final String name){
-        for(final Localidade localidade: localidades){
-            System.out.println(localidade.cidade+" "+localidade.id);
-            if(localidade.cidade.toLowerCase().contains(name.toLowerCase())){
+    private Localidade find(final List<Localidade> localidades, final Long id) {
+        for (final Localidade localidade : localidades) {
+            if (id.equals(localidade.id)) {
                 return localidade;
             }
         }
         return null;
     }
 
-    public static class BuscaOrigemPorNomeParams extends Params{
-        public final String nome;
-        public BuscaOrigemPorNomeParams(final String nome){
-            this.nome = nome;
+    public static class BuscaOrigemByIdParams extends Params {
+        public final Long id;
+
+        public BuscaOrigemByIdParams(final Long id) {
+            this.id = id;
         }
     }
 
-    public static class BuscaOrigemPorNomeResult extends Result<Localidade>{
-        public BuscaOrigemPorNomeResult(Localidade result) { super(result); }
-        public BuscaOrigemPorNomeResult(Exception exception) { super(exception); }
+    public static class BuscaOrigemByIdResult extends Result<Localidade> {
+        public BuscaOrigemByIdResult(Localidade result) {
+            super(result);
+        }
+
+        public BuscaOrigemByIdResult(Exception exception) {
+            super(exception);
+        }
     }
 }

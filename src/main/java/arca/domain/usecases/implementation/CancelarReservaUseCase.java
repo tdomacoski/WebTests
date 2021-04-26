@@ -4,6 +4,7 @@ import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.ConexaoOperadora;
 import arca.domain.entities.DevolvePoltrona;
+import arca.domain.entities.Error;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
@@ -14,7 +15,6 @@ import arca.logger.Logger;
 public class CancelarReservaUseCase extends UseCase<CancelarReservaUseCase.CancelarReservaResult, CancelarReservaUseCase.CancelarReservaParams> {
 
     private final String method = "devolvePoltrona?origem=%s&destino=%s&data=%s&servico=%s&grupo=%s&idtransacao=%s&numBilhete=%s&poltrona=%s&lancaMulta=%s";
-    private final String type = "PUT";
     private final RequestModel requestModel;
     private final ParseJson<DevolvePoltrona> parseJson;
     private final ConexaoOperadora conexaoOperadora;
@@ -35,17 +35,20 @@ public class CancelarReservaUseCase extends UseCase<CancelarReservaUseCase.Cance
         try {
             final String url = generateUrl(params);
             logger.add(url);
-            return validate(requestModel.execute(conexaoOperadora, url, type));
+            return validate(requestModel.execute(conexaoOperadora, url, RequestModel.RequestType.PUT));
         } catch (final NetworkException ne) {
             return new CancelarReservaResult(ne);
         }
     }
 
 
-    private CancelarReservaResult validate(final String json) {
-        logger.add(json);
+    private CancelarReservaResult validate(final RequestModel.ResponseModel response) {
         try {
-            return new CancelarReservaResult(parseJson.parse(json));
+            if(response.isSucess()){
+                return new CancelarReservaResult(parseJson.parse(response.body));
+            }else{
+                return new CancelarReservaResult(response.error);
+            }
         } catch (final ParseException pe) {
             return new CancelarReservaResult(pe);
         }
@@ -91,6 +94,9 @@ public class CancelarReservaUseCase extends UseCase<CancelarReservaUseCase.Cance
         }
         public CancelarReservaResult(Exception exception) {
             super(exception);
+        }
+        public CancelarReservaResult(Error error) {
+            super(error);
         }
     }
 }

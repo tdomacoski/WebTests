@@ -4,6 +4,7 @@ import arca.controllers.network.RequestModel;
 import arca.controllers.parse.ParseJson;
 import arca.domain.entities.BuscaStatusBilhete;
 import arca.domain.entities.ConexaoOperadora;
+import arca.domain.entities.Error;
 import arca.domain.usecases.Params;
 import arca.domain.usecases.Result;
 import arca.domain.usecases.UseCase;
@@ -14,7 +15,6 @@ import arca.logger.Logger;
 public class BuscaStatusBilheteUseCase extends UseCase<BuscaStatusBilheteUseCase.BuscaStatusBilheteResult, BuscaStatusBilheteUseCase.BuscaStatusBilheteParams> {
 
     private final String method = "buscaStatusBilhete?grupo=%s&servico=%s&numBilhete=%s&origem=%s&destino=%s&data=%s&poltrona=%s";
-    private final String type = "GET";
 
     private final RequestModel requestModel;
     private final ParseJson<BuscaStatusBilhete> parseJson;
@@ -36,7 +36,7 @@ public class BuscaStatusBilheteUseCase extends UseCase<BuscaStatusBilheteUseCase
         try{
             final String url = generateUrl(params);
             logger.add(url);
-            return validate( requestModel.execute(conexaoOperadora, url, type) );
+            return validate( requestModel.execute(conexaoOperadora, url, RequestModel.RequestType.GET) );
         }catch (final NetworkException ne){
             return new BuscaStatusBilheteResult(ne);
         }
@@ -47,10 +47,13 @@ public class BuscaStatusBilheteUseCase extends UseCase<BuscaStatusBilheteUseCase
                 params.origem, params.destino, params.data, params.poltrona);
     }
 
-    private BuscaStatusBilheteResult validate(final String json){
-        logger.add(json);
+    private BuscaStatusBilheteResult validate(final RequestModel.ResponseModel response){
         try{
-            return new BuscaStatusBilheteResult(parseJson.parse(json));
+            if(response.isSucess()){
+                return new BuscaStatusBilheteResult(parseJson.parse(response.body));
+            }else {
+                return  new BuscaStatusBilheteResult(response.error);
+            }
         }catch (final ParseException pe){
             return new BuscaStatusBilheteResult(pe);
         }
@@ -78,6 +81,9 @@ public class BuscaStatusBilheteUseCase extends UseCase<BuscaStatusBilheteUseCase
         }
         public BuscaStatusBilheteResult(Exception exception) {
             super(exception);
+        }
+        public BuscaStatusBilheteResult(Error error) {
+            super(error);
         }
     }
 }

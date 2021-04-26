@@ -1,4 +1,4 @@
-package arca.database.postgre;
+package arca.motorista.database.postgre;
 
 import arca.database.ConnectionModel;
 
@@ -9,9 +9,9 @@ public class MotoristaPostgres implements ConnectionModel {
     @Override
     public Connection create() throws Exception {
         final String driver = "org.postgresql.Driver";
-        final String user = "eogcyyctobrhxd";
-        final String senha = "32a986e6a6bf43efe994e316ff054b5f03d05a757dda6c1abe9b4b1bbcf247d2";
-        final String url = "postgres://eogcyyctobrhxd:32a986e6a6bf43efe994e316ff054b5f03d05a757dda6c1abe9b4b1bbcf247d2@ec2-52-200-111-186.compute-1.amazonaws.com:5432/dfk82dkv5nfp42";
+        final String user = "uizjboorumoobe";
+        final String senha = "c4c930453cc2454f6c8b54c39de26d459d0bab8f324b8bf987ebe3603f34c4b6";
+        final String url = "postgres://uizjboorumoobe:c4c930453cc2454f6c8b54c39de26d459d0bab8f324b8bf987ebe3603f34c4b6@ec2-34-235-240-133.compute-1.amazonaws.com:5432/dq10qv9rtc4ol";
         Class.forName(driver);
         return Connection.class.cast(DriverManager.getConnection(url, user, senha));
     }

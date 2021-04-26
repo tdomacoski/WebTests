@@ -2,11 +2,7 @@ package arca.controllers.email;
 
 import arca.util.DateUtils;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
@@ -27,7 +23,7 @@ public class SendMail {
 
     }
 
-    private static boolean send(final String descricao, final String msg, final String to){
+    public static boolean send(final String descricao, final String msg, final String to){
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
@@ -58,4 +54,38 @@ public class SendMail {
         }
 
     }
+
+
+    public static boolean send(final String descricao, final String msg, final String to, final Session session){
+
+//        Properties props = new Properties();
+//        props.put("mail.smtp.host", "smtp.gmail.com");
+//        props.put("mail.smtp.socketFactory.port", "465");
+//        props.put("mail.smtp.socketFactory.class",
+//                "javax.net.ssl.SSLSocketFactory");
+//        props.put("mail.smtp.auth", "true");
+//        props.put("mail.smtp.port", "465");
+//
+//         = Session.getDefaultInstance(props,
+//                new javax.mail.Authenticator() {
+//                    protected PasswordAuthentication getPasswordAuthentication() {
+//                        return new PasswordAuthentication(user,ps);
+//                    }
+//                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(user));
+            message.setRecipients(Message.RecipientType.TO,InternetAddress.parse(to));
+            message.setSubject(descricao);
+            message.setText(msg);
+            Transport.send(message);
+            return true;
+        } catch (MessagingException e) {
+            return false;
+        }
+
+    }
+
 }
